@@ -32,18 +32,34 @@ def get_audit_or_404(db: Session, audit_id: int) -> InventoryAudit:
 
 def list_audits(
     db: Session,
+    current_user: User,
     skip: int = 0,
     limit: int = 200,
     department_id: int | None = None,
     audit_status: str | None = None,
 ):
-    stmt = select(InventoryAudit).order_by(InventoryAudit.id.desc()).offset(skip).limit(limit)
+    stmt = select(InventoryAudit).order_by(InventoryAudit.id.desc())
 
+    # Lọc theo department_id (từ frontend truyền lên)
     if department_id is not None:
         stmt = stmt.where(InventoryAudit.department_id == department_id)
     if audit_status is not None:
         stmt = stmt.where(InventoryAudit.status == audit_status)
 
+    # Phân quyền:
+    # Nếu không phải ADMIN, chỉ xem được đợt kiểm kê của phòng ban mình
+    # HOẶC đợt kiểm kê mà mình được phân công (assigned_to_user_id == current_user.id)
+    if current_user.role != UserRole.ADMIN:
+        from sqlalchemy import or_
+        conditions = []
+        if current_user.department_id:
+            conditions.append(InventoryAudit.department_id == current_user.department_id)
+        conditions.append(InventoryAudit.assigned_to_user_id == current_user.id)
+        
+        if conditions:
+            stmt = stmt.where(or_(*conditions))
+
+    stmt = stmt.offset(skip).limit(limit)
     return list(db.scalars(stmt).all())
 
 

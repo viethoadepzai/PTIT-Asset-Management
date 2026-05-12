@@ -70,20 +70,12 @@ def get_inventory_audits(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
 ):
-    # Lọc theo department_id nếu user là staff/manager (manager mặc định chỉ thấy của phòng mình)
-    filter_dept_id = department_id
-    if current_user.role != UserRole.ADMIN and current_user.department_id:
-        if department_id is None:
-            filter_dept_id = current_user.department_id
-        elif department_id != current_user.department_id:
-            # Không cho phép xem phòng ban khác
-            return []
-
     audits = inventory_audits_service.list_audits(
         db=db,
+        current_user=current_user,
         skip=skip,
         limit=limit,
-        department_id=filter_dept_id,
+        department_id=department_id,
         audit_status=audit_status,
     )
     return [_map_audit_response(a) for a in audits]
@@ -99,7 +91,7 @@ def get_inventory_audit_detail(
     
     # Kiểm tra quyền
     if current_user.role != UserRole.ADMIN:
-        if audit.department_id != current_user.department_id:
+        if audit.department_id != current_user.department_id and audit.assigned_to_user_id != current_user.id:
             from fastapi import HTTPException
             raise HTTPException(status_code=403, detail="Không có quyền truy cập đợt kiểm kê này.")
 
@@ -112,7 +104,7 @@ def get_inventory_audit_detail(
 def create_inventory_audit(
     payload: InventoryAuditCreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_roles(UserRole.ADMIN, UserRole.MANAGER)),
+    current_user: User = Depends(require_roles(UserRole.ADMIN)),
 ):
     audit = inventory_audits_service.create_audit(db, payload, current_user)
     return _map_audit_response(audit)
@@ -123,7 +115,7 @@ def update_inventory_audit(
     audit_id: int,
     payload: InventoryAuditUpdate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_roles(UserRole.ADMIN, UserRole.MANAGER)),
+    current_user: User = Depends(require_roles(UserRole.ADMIN)),
 ):
     audit = inventory_audits_service.get_audit_or_404(db, audit_id)
     audit = inventory_audits_service.update_audit(db, audit, payload, current_user)
@@ -177,7 +169,7 @@ def submit_audit(
 def approve_audit(
     audit_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_roles(UserRole.ADMIN, UserRole.MANAGER)),
+    current_user: User = Depends(require_roles(UserRole.ADMIN)),
 ):
     audit = inventory_audits_service.get_audit_or_404(db, audit_id)
     inventory_audits_service.approve_audit(db, audit, current_user)
@@ -199,7 +191,7 @@ def complete_audit(
 def cancel_audit(
     audit_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_roles(UserRole.ADMIN, UserRole.MANAGER)),
+    current_user: User = Depends(require_roles(UserRole.ADMIN)),
 ):
     audit = inventory_audits_service.get_audit_or_404(db, audit_id)
     inventory_audits_service.cancel_audit(db, audit, current_user)

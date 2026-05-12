@@ -22,7 +22,7 @@ router = APIRouter(prefix="/users", tags=["Users"])
 @router.get("", response_model=list[UserResponse])
 def read_users(
     skip: int = Query(default=0, ge=0),
-    limit: int = Query(default=100, ge=1, le=200),
+    limit: int = Query(default=100, ge=1, le=1000),
     keyword: str | None = Query(default=None, min_length=1, max_length=255),
     department_id: int | None = Query(default=None, ge=1),
     role: UserRole | None = Query(default=None),

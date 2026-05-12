@@ -42,6 +42,7 @@ from app.routers.supply_exports import router as supply_export_router
 from app.routers.users import router as user_router
 from app.routers.warranties import router as warranty_router
 from app.routers.department_allocations import router as department_allocation_router
+from app.routers.inventory_audits import router as inventory_audit_router
 from app.services.bootstrap_admin_service import bootstrap_admin
 
 BACKEND_ROOT = Path(__file__).resolve().parents[1]
@@ -123,3 +124,4 @@ app.include_router(supply_export_router, prefix=settings.API_V1_STR)
 app.include_router(asset_loan_router, prefix=settings.API_V1_STR)
 app.include_router(warranty_router, prefix=settings.API_V1_STR)
 app.include_router(department_allocation_router, prefix=settings.API_V1_STR)
+app.include_router(inventory_audit_router, prefix=settings.API_V1_STR)

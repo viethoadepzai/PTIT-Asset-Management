@@ -28,6 +28,8 @@ import AssetLoans from "views/admin/assetLoans";
 import SupplyExports from "views/admin/supplyExports";
 import Warranties from "views/admin/warranties";
 import DepartmentAllocations from "views/admin/departmentAllocations";
+import InventoryAudits from "views/admin/inventoryAudits";
+import AuditDetails from "views/admin/inventoryAudits/AuditDetails";
 
 // Auth Imports
 import SignInCentered from "views/auth/signIn";
@@ -146,6 +148,14 @@ const routes = [
         roles: ["admin", "manager", "staff"],
       },
       {
+        name: "Kiểm kê định kỳ",
+        layout: "/admin",
+        path: "/inventory-audits",
+        icon: <Icon as={MdAssessment} width="20px" height="20px" color="inherit" />,
+        component: <InventoryAudits />,
+        roles: ["admin", "manager", "staff"],
+      },
+      {
         name: "Phân bổ TS số lượng lớn",
         layout: "/admin",
         path: "/department-allocations",
@@ -160,6 +170,14 @@ const routes = [
         icon: <Icon as={MdBuild} width="20px" height="20px" color="inherit" />,
         component: <Warranties />,
         roles: ["admin", "manager", "staff"],
+      },
+      {
+        name: "Chi tiết kiểm kê",
+        layout: "/admin",
+        path: "/inventory-audits/:id",
+        component: <AuditDetails />,
+        roles: ["admin", "manager", "staff"],
+        hide: true,
       },
     ],
   },

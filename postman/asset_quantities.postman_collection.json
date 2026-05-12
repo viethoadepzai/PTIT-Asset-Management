@@ -1,0 +1,320 @@
+{
+  "info": {
+    "name": "PTIT Asset Management - Asset Quantities",
+    "description": "Test API cho module \"tài sản số lượng\" (asset-quantities). Collection tự login để lấy token và lưu assetQuantityId sau khi tạo.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth - Login (login-json)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"Admin@123\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/login-json",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "auth",
+            "login-json"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Login OK\", function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "const data = pm.response.json();",
+              "pm.collectionVariables.set(\"token\", data.access_token);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Asset Quantities - List",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/asset-quantities?skip=0&limit=200",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "asset-quantities"
+          ],
+          "query": [
+            {
+              "key": "skip",
+              "value": "0"
+            },
+            {
+              "key": "limit",
+              "value": "200"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"List OK\", function () {",
+              "  pm.response.to.have.status(200);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Asset Quantities - Create",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Ghế phòng học\",\n  \"category\": \"Noi that\",\n  \"quantity\": 30,\n  \"available_quantity\": 30,\n  \"status\": \"available\",\n  \"condition\": \"good\",\n  \"location\": \"Toa A\",\n  \"note\": \"Demo asset-quantities\",\n  \"is_active\": true\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/asset-quantities",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "asset-quantities"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Create OK\", function () {",
+              "  pm.response.to.have.status(201);",
+              "});",
+              "",
+              "const data = pm.response.json();",
+              "pm.collectionVariables.set(\"assetQuantityId\", data.id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Asset Quantities - Detail",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/asset-quantities/{{assetQuantityId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "asset-quantities",
+            "{{assetQuantityId}}"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Detail OK\", function () {",
+              "  pm.response.to.have.status(200);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Asset Quantities - Update (PUT)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Ghế phòng học (updated)\",\n  \"category\": \"Noi that\",\n  \"quantity\": 32,\n  \"available_quantity\": 32,\n  \"location\": \"Toa A\",\n  \"note\": \"Updated via Postman\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/asset-quantities/{{assetQuantityId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "asset-quantities",
+            "{{assetQuantityId}}"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Update OK\", function () {",
+              "  pm.response.to.have.status(200);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Asset Quantities - Update Status (PATCH)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"in_use\",\n  \"condition\": \"good\",\n  \"note\": \"Status updated via Postman\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/asset-quantities/{{assetQuantityId}}/status",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "asset-quantities",
+            "{{assetQuantityId}}",
+            "status"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Update status OK\", function () {",
+              "  pm.response.to.have.status(200);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Asset Quantities - Deactivate (PATCH)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/asset-quantities/{{assetQuantityId}}/deactivate",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "asset-quantities",
+            "{{assetQuantityId}}",
+            "deactivate"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Deactivate OK\", function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "const data = pm.response.json();",
+              "pm.test(\"is_active is false\", function () {",
+              "  pm.expect(Boolean(data.is_active)).to.eql(false);",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:8000/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "assetQuantityId",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

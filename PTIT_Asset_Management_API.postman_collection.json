@@ -1,0 +1,1832 @@
+{
+  "info": {
+    "name": "PTIT Asset Management API",
+    "description": "Postman collection for testing PTIT Asset Management REST API. All endpoints require JWT Bearer token authentication (except login).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000/api/v1"
+    },
+    {
+      "key": "token",
+      "value": ""
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login (form-data)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "pm.collectionVariables.set('token', jsonData.access_token);",
+                  "pm.test('Token received', function() {",
+                  "  pm.expect(jsonData.access_token).to.not.be.empty;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "username",
+                  "value": "manager",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "matkhauratmanh",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Login (JSON)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "pm.collectionVariables.set('token', jsonData.access_token);",
+                  "pm.test('Token received', function() {",
+                  "  pm.expect(jsonData.access_token).to.not.be.empty;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"manager\",\n  \"password\": \"matkhauratmanh\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login-json",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login-json"]
+            }
+          }
+        },
+        {
+          "name": "Get Current User",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "me"]
+            }
+          }
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"current_password\": \"matkhauratmanh\",\n  \"new_password\": \"MatkhauMoi123@\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/change-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "change-password"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "List Users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users?limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["users"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get User by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/2",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "2"]
+            }
+          }
+        },
+        {
+          "name": "Create User (Admin only)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"staff04\",\n  \"email\": \"staff04@ptit.edu.vn\",\n  \"full_name\": \"Nguyễn Văn Đức\",\n  \"password\": \"MatkhauMoi123@\",\n  \"phone_number\": \"0901000006\",\n  \"role\": \"staff\",\n  \"department_id\": 2,\n  \"must_change_password\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["users"]
+            }
+          }
+        },
+        {
+          "name": "Update User (Admin only)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"full_name\": \"Nguyễn Thị Minh (Updated)\",\n  \"phone_number\": \"0901000002\",\n  \"role\": \"manager\",\n  \"department_id\": 2\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/2",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "2"]
+            }
+          }
+        },
+        {
+          "name": "Deactivate User (Admin only)",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/2/deactivate",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "2", "deactivate"]
+            }
+          }
+        },
+        {
+          "name": "Activate User (Admin only)",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/2/activate",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "2", "activate"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Departments",
+      "item": [
+        {
+          "name": "List Departments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/departments?limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["departments"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Department by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/departments/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["departments", "1"]
+            }
+          }
+        },
+        {
+          "name": "Create Department (Admin/Manager only)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"KHO\",\n  \"name\": \"Kho tổng\",\n  \"description\": \"Phòng Kho - Quản lý kho tàng và vật tư dự trữ\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/departments",
+              "host": ["{{baseUrl}}"],
+              "path": ["departments"]
+            }
+          }
+        },
+        {
+          "name": "Update Department (Admin/Manager only)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Hành chính - Quản trị (Updated)\",\n  \"description\": \"Phòng Hành chính Quản trị - Updated\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/departments/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["departments", "1"]
+            }
+          }
+        },
+        {
+          "name": "Deactivate Department (Admin only)",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/departments/6/deactivate",
+              "host": ["{{baseUrl}}"],
+              "path": ["departments", "6", "deactivate"]
+            }
+          }
+        },
+        {
+          "name": "Delete Department (Admin only)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/departments/6",
+              "host": ["{{baseUrl}}"],
+              "path": ["departments", "6"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Categories",
+      "item": [
+        {
+          "name": "List Categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/categories?limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["categories"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List Categories (supply only)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/categories?category_type=supply",
+              "host": ["{{baseUrl}}"],
+              "path": ["categories"],
+              "query": [
+                {
+                  "key": "category_type",
+                  "value": "supply"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List Categories (asset only)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/categories?category_type=asset",
+              "host": ["{{baseUrl}}"],
+              "path": ["categories"],
+              "query": [
+                {
+                  "key": "category_type",
+                  "value": "asset"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Category by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/categories/5",
+              "host": ["{{baseUrl}}"],
+              "path": ["categories", "5"]
+            }
+          }
+        },
+        {
+          "name": "Create Category (Admin only)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"category_code\": \"CAT010\",\n  \"category_type\": \"asset\",\n  \"category_name\": \"Tai nghe\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/categories",
+              "host": ["{{baseUrl}}"],
+              "path": ["categories"]
+            }
+          }
+        },
+        {
+          "name": "Update Category (Admin only)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"category_name\": \"Laptop (Updated)\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/categories/5",
+              "host": ["{{baseUrl}}"],
+              "path": ["categories", "5"]
+            }
+          }
+        },
+        {
+          "name": "Set Category Required Quantity (Admin only)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"department_id\": 1,\n  \"require_quantity\": 20\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/categories/5/require-quantity",
+              "host": ["{{baseUrl}}"],
+              "path": ["categories", "5", "require-quantity"]
+            }
+          }
+        },
+        {
+          "name": "Delete Category (Admin only)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/categories/10",
+              "host": ["{{baseUrl}}"],
+              "path": ["categories", "10"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Assets",
+      "item": [
+        {
+          "name": "List Assets",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/assets?limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["assets"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List Assets (with filters)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/assets?status=available&condition=new&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["assets"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "available"
+                },
+                {
+                  "key": "condition",
+                  "value": "new"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Asset by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/assets/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["assets", "1"]
+            }
+          }
+        },
+        {
+          "name": "Create Asset (Admin/Manager only)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"asset_code\": \"TS007\",\n  \"name\": \"MacBook Pro 14 inch\",\n  \"serial_number\": \"MBP14001\",\n  \"specification\": \"Apple M3 Pro, 18GB RAM, 512GB SSD\",\n  \"purchase_date\": \"2025-04-01\",\n  \"purchase_cost\": 45000000.00,\n  \"useful_life\": 60,\n  \"status\": \"available\",\n  \"condition\": \"new\",\n  \"location\": \"Kho CNTT tầng 3\",\n  \"note\": \"Laptop mới cho phòng CNTT\",\n  \"assigned_department_id\": 2,\n  \"category_id\": 5\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/assets",
+              "host": ["{{baseUrl}}"],
+              "path": ["assets"]
+            }
+          }
+        },
+        {
+          "name": "Update Asset (Admin/Manager only)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"MacBook Pro 14 inch (Updated)\",\n  \"location\": \"Kho CNTT tầng 4\",\n  \"note\": \"Đã cập nhật vị trí lưu kho\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/assets/7",
+              "host": ["{{baseUrl}}"],
+              "path": ["assets", "7"]
+            }
+          }
+        },
+        {
+          "name": "Update Asset Status (Admin/Manager only)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"in_use\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/assets/1/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["assets", "1", "status"]
+            }
+          }
+        },
+        {
+          "name": "Deactivate Asset (Admin only)",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/assets/7/deactivate",
+              "host": ["{{baseUrl}}"],
+              "path": ["assets", "7", "deactivate"]
+            }
+          }
+        },
+        {
+          "name": "Activate Asset (Admin only)",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/assets/7/activate",
+              "host": ["{{baseUrl}}"],
+              "path": ["assets", "7", "activate"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Supplies",
+      "item": [
+        {
+          "name": "List Supplies",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/supplies?limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["supplies"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List Supplies (low stock only)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/supplies?low_stock_only=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["supplies"],
+              "query": [
+                {
+                  "key": "low_stock_only",
+                  "value": "true"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Supply by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/supplies/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["supplies", "1"]
+            }
+          }
+        },
+        {
+          "name": "Create Supply (Admin/Manager only)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"supply_code\": \"VT007\",\n  \"name\": \"USB 32GB Kingston\",\n  \"category_id\": null,\n  \"unit\": \"cái\",\n  \"quantity_in_stock\": 50.00,\n  \"minimum_stock_level\": 10.00,\n  \"unit_price\": 120000.00,\n  \"location\": \"Kho văn phòng\",\n  \"description\": \"USB 3.0, tốc độ đọc 100MB/s\",\n  \"managed_department_id\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/supplies",
+              "host": ["{{baseUrl}}"],
+              "path": ["supplies"]
+            }
+          }
+        },
+        {
+          "name": "Update Supply (Admin/Manager only)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"USB 32GB Kingston (Updated)\",\n  \"quantity_in_stock\": 45.00,\n  \"note\": \"Đã cập nhật số lượng tồn kho\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/supplies/7",
+              "host": ["{{baseUrl}}"],
+              "path": ["supplies", "7"]
+            }
+          }
+        },
+        {
+          "name": "Update Supply Stock (Admin/Manager only)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"adjustment\": -5.00,\n  \"note\": \"Xuất cho phòng Kế toán\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/supplies/7/stock",
+              "host": ["{{baseUrl}}"],
+              "path": ["supplies", "7", "stock"]
+            }
+          }
+        },
+        {
+          "name": "Deactivate Supply (Admin only)",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/supplies/7/deactivate",
+              "host": ["{{baseUrl}}"],
+              "path": ["supplies", "7", "deactivate"]
+            }
+          }
+        },
+        {
+          "name": "Activate Supply (Admin only)",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/supplies/7/activate",
+              "host": ["{{baseUrl}}"],
+              "path": ["supplies", "7", "activate"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Asset Quantities",
+      "item": [
+        {
+          "name": "List Asset Quantities",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/asset-quantities?limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["asset-quantities"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Asset Quantity by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/asset-quantities/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["asset-quantities", "1"]
+            }
+          }
+        },
+        {
+          "name": "Create Asset Quantity (Admin/Manager only)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"TSL005\",\n  \"name\": \"Bàn họp\",\n  \"quantity\": 10,\n  \"specification\": \"Bàn họp 6 người, mặt gỗ MF\",\n  \"purchase_date\": \"2025-05-01\",\n  \"purchase_cost\": 5000000.00,\n  \"useful_life\": 120,\n  \"status\": \"available\",\n  \"condition\": \"new\",\n  \"location\": \"Kho Hành chính\",\n  \"category_id\": null\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/asset-quantities",
+              "host": ["{{baseUrl}}"],
+              "path": ["asset-quantities"]
+            }
+          }
+        },
+        {
+          "name": "Update Asset Quantity (Admin/Manager only)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Bàn họp (Updated)\",\n  \"location\": \"Kho Hành chính tầng 2\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/asset-quantities/5",
+              "host": ["{{baseUrl}}"],
+              "path": ["asset-quantities", "5"]
+            }
+          }
+        },
+        {
+          "name": "Update Asset Quantity Status (Admin/Manager only)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"in_use\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/asset-quantities/1/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["asset-quantities", "1", "status"]
+            }
+          }
+        },
+        {
+          "name": "Approve Asset Quantity (Admin only)",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/asset-quantities/1/approve",
+              "host": ["{{baseUrl}}"],
+              "path": ["asset-quantities", "1", "approve"]
+            }
+          }
+        },
+        {
+          "name": "Reject Asset Quantity (Admin only)",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/asset-quantities/1/reject",
+              "host": ["{{baseUrl}}"],
+              "path": ["asset-quantities", "1", "reject"]
+            }
+          }
+        },
+        {
+          "name": "Deactivate Asset Quantity (Admin only)",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/asset-quantities/5/deactivate",
+              "host": ["{{baseUrl}}"],
+              "path": ["asset-quantities", "5", "deactivate"]
+            }
+          }
+        },
+        {
+          "name": "List Locations of Asset Quantity",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/asset-quantities/1/locations",
+              "host": ["{{baseUrl}}"],
+              "path": ["asset-quantities", "1", "locations"]
+            }
+          }
+        },
+        {
+          "name": "Add Location to Asset Quantity (Admin/Manager only)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"room_code\": \"TANG3\",\n  \"quantity\": 5,\n  \"used\": 0\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/asset-quantities/1/locations",
+              "host": ["{{baseUrl}}"],
+              "path": ["asset-quantities", "1", "locations"]
+            }
+          }
+        },
+        {
+          "name": "Update Location (Admin/Manager only)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quantity\": 8,\n  \"used\": 2\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/asset-quantities/1/locations/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["asset-quantities", "1", "locations", "1"]
+            }
+          }
+        },
+        {
+          "name": "Approve Location (Admin/Manager only)",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/asset-quantities/1/locations/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["asset-quantities", "1", "locations", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Location (Admin/Manager only)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/asset-quantities/1/locations/5",
+              "host": ["{{baseUrl}}"],
+              "path": ["asset-quantities", "1", "locations", "5"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Allocations",
+      "item": [
+        {
+          "name": "List Allocations",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/allocations?limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["allocations"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List Allocations (active only)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/allocations?status=active",
+              "host": ["{{baseUrl}}"],
+              "path": ["allocations"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "active"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Allocation by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/allocations/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["allocations", "1"]
+            }
+          }
+        },
+        {
+          "name": "Create Asset Allocation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"allocation_type\": \"asset\",\n  \"asset_id\": 4,\n  \"allocated_department_id\": 2,\n  \"allocated_user_id\": 2,\n  \"expected_return_date\": \"2026-12-31\",\n  \"purpose\": \"Cấp bàn phím cho nhân viên mới\",\n  \"note\": \"Bàn giao kèm phiếu kiểm tra\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/allocations",
+              "host": ["{{baseUrl}}"],
+              "path": ["allocations"]
+            }
+          }
+        },
+        {
+          "name": "Create Supply Allocation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"allocation_type\": \"supply\",\n  \"supply_id\": 1,\n  \"quantity\": 5,\n  \"allocated_department_id\": 3,\n  \"purpose\": \"Cấp giấy in cho phòng Lab\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/allocations",
+              "host": ["{{baseUrl}}"],
+              "path": ["allocations"]
+            }
+          }
+        },
+        {
+          "name": "Update Allocation (Admin/Manager only)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note\": \"Đã cập nhật ghi chú cấp phát\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/allocations/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["allocations", "1"]
+            }
+          }
+        },
+        {
+          "name": "Update Allocation Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"completed\",\n  \"returned_at\": \"2026-05-10 14:00:00\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/allocations/1/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["allocations", "1", "status"]
+            }
+          }
+        },
+        {
+          "name": "Deactivate Allocation (Admin only)",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/allocations/6/deactivate",
+              "host": ["{{baseUrl}}"],
+              "path": ["allocations", "6", "deactivate"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Asset Needs",
+      "item": [
+        {
+          "name": "Get Asset Needs by Department (Admin only)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/asset-needs?department_id=1",
+              "host": ["{{baseUrl}}"],
+              "path": ["asset-needs"],
+              "query": [
+                {
+                  "key": "department_id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Category Requirement (Admin only)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"department_id\": 1,\n  \"asset_type\": \"asset\",\n  \"category_id\": 5,\n  \"required_quantity_category\": 15\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/asset-needs/category-requirement",
+              "host": ["{{baseUrl}}"],
+              "path": ["asset-needs", "category-requirement"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Maintenances",
+      "item": [
+        {
+          "name": "List Maintenances",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/maintenances?limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["maintenances"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List Maintenances (in_progress)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/maintenances?status=in_progress",
+              "host": ["{{baseUrl}}"],
+              "path": ["maintenances"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "in_progress"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Maintenance by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/maintenances/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["maintenances", "1"]
+            }
+          }
+        },
+        {
+          "name": "Create Maintenance",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"asset_id\": 1,\n  \"maintenance_type\": \"preventive\",\n  \"priority\": \"medium\",\n  \"title\": \"Bảo trì định kỳ laptop Dell Latitude\",\n  \"description\": \"Vệ sinh quạt tản nhiệt, cài đặt bản vá bảo mật, kiểm tra pin\",\n  \"scheduled_date\": \"2026-06-01\",\n  \"assigned_to_user_id\": 2\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/maintenances",
+              "host": ["{{baseUrl}}"],
+              "path": ["maintenances"]
+            }
+          }
+        },
+        {
+          "name": "Update Maintenance (Admin/Manager only)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Bảo trì định kỳ laptop Dell Latitude (Updated)\",\n  \"note\": \"Đã cập nhật mô tả công việc\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/maintenances/4",
+              "host": ["{{baseUrl}}"],
+              "path": ["maintenances", "4"]
+            }
+          }
+        },
+        {
+          "name": "Update Maintenance Status (Admin/Manager only)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"completed\",\n  \"completed_at\": \"2026-05-10 11:00:00\",\n  \"cost\": 200000.00,\n  \"resolution_note\": \"Đã hoàn thành vệ sinh và cài đặt bảo mật\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/maintenances/4/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["maintenances", "4", "status"]
+            }
+          }
+        },
+        {
+          "name": "Deactivate Maintenance (Admin only)",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/maintenances/4/deactivate",
+              "host": ["{{baseUrl}}"],
+              "path": ["maintenances", "4", "deactivate"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Warranties",
+      "item": [
+        {
+          "name": "List Warranty Tickets",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/warranties",
+              "host": ["{{baseUrl}}"],
+              "path": ["warranties"]
+            }
+          }
+        },
+        {
+          "name": "Get Warranty Ticket by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/warranties/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["warranties", "1"]
+            }
+          }
+        },
+        {
+          "name": "Create Warranty Ticket",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"asset_id\": 3,\n  \"vendor_name\": \"HP Việt Nam\",\n  \"provider_contact\": \"1800-1234\",\n  \"warranty_start_date\": \"2025-06-20\",\n  \"warranty_end_date\": \"2028-06-19\",\n  \"issue_description\": \"Máy in bị kẹt giấy nghiêm trọng, cần bảo hành\",\n  \"handled_by_user_id\": 2\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/warranties",
+              "host": ["{{baseUrl}}"],
+              "path": ["warranties"]
+            }
+          }
+        },
+        {
+          "name": "Send Warranty Ticket (Admin/Manager only)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"expected_return_date\": \"2026-05-20\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/warranties/1/send",
+              "host": ["{{baseUrl}}"],
+              "path": ["warranties", "1", "send"]
+            }
+          }
+        },
+        {
+          "name": "Complete Warranty Ticket (Admin/Manager only)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"received_back_date\": \"2026-05-15\",\n  \"resolution_note\": \"Đã sửa xong, máy hoạt động bình thường\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/warranties/1/complete",
+              "host": ["{{baseUrl}}"],
+              "path": ["warranties", "1", "complete"]
+            }
+          }
+        },
+        {
+          "name": "Cancel Warranty Ticket (Admin/Manager only)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note\": \"Không thể bảo hành do hết hạn\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/warranties/3/cancel",
+              "host": ["{{baseUrl}}"],
+              "path": ["warranties", "3", "cancel"]
+            }
+          }
+        },
+        {
+          "name": "Export Warranty Ticket PDF",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/warranties/1/pdf",
+              "host": ["{{baseUrl}}"],
+              "path": ["warranties", "1", "pdf"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Asset Loans",
+      "item": [
+        {
+          "name": "List Asset Loan Vouchers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/asset-loans",
+              "host": ["{{baseUrl}}"],
+              "path": ["asset-loans"]
+            }
+          }
+        },
+        {
+          "name": "Get Asset Loan Voucher by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/asset-loans/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["asset-loans", "1"]
+            }
+          }
+        },
+        {
+          "name": "Create Asset Loan Voucher",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"borrower_department_id\": 3,\n  \"borrower_user_id\": null,\n  \"loan_date\": \"2026-05-15\",\n  \"expected_return_date\": \"2026-05-22\",\n  \"purpose\": \"Mượn máy chiếu để họp phòng Lab\",\n  \"items\": [\n    {\n      \"asset_id\": 2,\n      \"note\": \"Kiểm tra tình trạng trước khi mượn\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/asset-loans",
+              "host": ["{{baseUrl}}"],
+              "path": ["asset-loans"]
+            }
+          }
+        },
+        {
+          "name": "Approve Asset Loan (Admin/Manager only)",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/asset-loans/3/approve",
+              "host": ["{{baseUrl}}"],
+              "path": ["asset-loans", "3", "approve"]
+            }
+          }
+        },
+        {
+          "name": "Receive Asset Loan",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"received_by_user_id\": 2,\n  \"actual_loan_date\": \"2026-05-15\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/asset-loans/1/receive",
+              "host": ["{{baseUrl}}"],
+              "path": ["asset-loans", "1", "receive"]
+            }
+          }
+        },
+        {
+          "name": "Return Asset Loan",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"actual_return_date\": \"2026-05-20\",\n  \"condition_reports\": [\n    {\n      \"asset_id\": 2,\n      \"condition_after_return\": \"good\",\n      \"note\": \"Máy hoạt động bình thường sau khi trả\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/asset-loans/1/return",
+              "host": ["{{baseUrl}}"],
+              "path": ["asset-loans", "1", "return"]
+            }
+          }
+        },
+        {
+          "name": "Cancel Asset Loan (Admin/Manager only)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note\": \"Hủy yêu cầu mượn do thay đổi kế hoạch\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/asset-loans/3/cancel",
+              "host": ["{{baseUrl}}"],
+              "path": ["asset-loans", "3", "cancel"]
+            }
+          }
+        },
+        {
+          "name": "Export Asset Loan PDF",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/asset-loans/1/pdf",
+              "host": ["{{baseUrl}}"],
+              "path": ["asset-loans", "1", "pdf"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Supply Exports",
+      "item": [
+        {
+          "name": "List Supply Export Vouchers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/supply-exports",
+              "host": ["{{baseUrl}}"],
+              "path": ["supply-exports"]
+            }
+          }
+        },
+        {
+          "name": "Get Supply Export Voucher by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/supply-exports/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["supply-exports", "1"]
+            }
+          }
+        },
+        {
+          "name": "Create Supply Export Voucher",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"recipient_department_id\": 3,\n  \"export_date\": \"2026-05-10\",\n  \"reason\": \"Cấp vật tư cho phòng Lab tháng 5/2026\",\n  \"items\": [\n    {\n      \"supply_id\": 1,\n      \"quantity\": 5,\n      \"note\": \"Giấy A4 cho phòng Lab\"\n    },\n    {\n      \"supply_id\": 4,\n      \"quantity\": 10,\n      \"note\": \"Bút bi cho phòng Lab\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/supply-exports",
+              "host": ["{{baseUrl}}"],
+              "path": ["supply-exports"]
+            }
+          }
+        },
+        {
+          "name": "Approve Supply Export (Admin/Manager only)",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/supply-exports/3/approve",
+              "host": ["{{baseUrl}}"],
+              "path": ["supply-exports", "3", "approve"]
+            }
+          }
+        },
+        {
+          "name": "Cancel Supply Export (Admin/Manager only)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note\": \"Hủy phiếu xuất do thay đổi kế hoạch\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/supply-exports/3/cancel",
+              "host": ["{{baseUrl}}"],
+              "path": ["supply-exports", "3", "cancel"]
+            }
+          }
+        },
+        {
+          "name": "Export Supply Export PDF",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/supply-exports/1/pdf",
+              "host": ["{{baseUrl}}"],
+              "path": ["supply-exports", "1", "pdf"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reports",
+      "item": [
+        {
+          "name": "Dashboard Summary (Admin/Manager only)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reports/dashboard-summary",
+              "host": ["{{baseUrl}}"],
+              "path": ["reports", "dashboard-summary"]
+            }
+          }
+        },
+        {
+          "name": "My Dashboard Summary",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reports/my-dashboard-summary",
+              "host": ["{{baseUrl}}"],
+              "path": ["reports", "my-dashboard-summary"]
+            }
+          }
+        },
+        {
+          "name": "Asset Status Summary (Admin/Manager only)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reports/asset-status-summary",
+              "host": ["{{baseUrl}}"],
+              "path": ["reports", "asset-status-summary"]
+            }
+          }
+        },
+        {
+          "name": "Low Stock Supplies (Admin/Manager only)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reports/low-stock-supplies",
+              "host": ["{{baseUrl}}"],
+              "path": ["reports", "low-stock-supplies"]
+            }
+          }
+        },
+        {
+          "name": "Allocation Status Summary (Admin/Manager only)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reports/allocation-status-summary",
+              "host": ["{{baseUrl}}"],
+              "path": ["reports", "allocation-status-summary"]
+            }
+          }
+        },
+        {
+          "name": "Maintenance Status Summary (Admin/Manager only)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reports/maintenance-status-summary",
+              "host": ["{{baseUrl}}"],
+              "path": ["reports", "maintenance-status-summary"]
+            }
+          }
+        },
+        {
+          "name": "Recent Activity (Admin/Manager only)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reports/recent-activity?limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["reports", "recent-activity"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Quantity Asset Status Summary (Admin/Manager only)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reports/quantity-asset-status-summary",
+              "host": ["{{baseUrl}}"],
+              "path": ["reports", "quantity-asset-status-summary"]
+            }
+          }
+        },
+        {
+          "name": "Assets by Department (Admin/Manager only)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reports/assets-by-department",
+              "host": ["{{baseUrl}}"],
+              "path": ["reports", "assets-by-department"]
+            }
+          }
+        },
+        {
+          "name": "Pending Approvals (Admin/Manager only)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reports/pending-approvals?limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["reports", "pending-approvals"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
